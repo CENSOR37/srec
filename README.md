@@ -1,0 +1,12 @@
+# A very fucking simple screen recorder.
+
+This is web app screen recorder. It uses [MediaStream Recording API](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream_Recording_API) to record screen and audio.
+
+## Features
+ - Open source
+ - Locally
+ - No installation
+ - No tracking
+ - No ads
+ - No bullshit
+ - Simple AF
