@@ -8,151 +8,83 @@
 		<script src="https://cdn.tailwindcss.com"></script>
 		<link rel="stylesheet" href="style.css" />
 	</head>
-	<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen">
+	<body class="bg-black">
 		<div id="app">
-			<div class="min-h-screen p-8">
-				<div class="max-w-6xl mx-auto">
-					<!-- Header -->
-					<div class="text-center mb-8">
-						<h1 class="text-4xl font-bold text-white mb-2">Screen Recorder</h1>
-						<p class="text-slate-400">Capture and record your screen with ease</p>
-					</div>
+			<!-- Fullscreen layout -->
+			<div class="h-screen flex flex-col">
+				<!-- Updated header with white text and subtle border -->
+				<div class="flex-shrink-0 text-center py-6 px-8 border-b border-zinc-800">
+					<h1 class="text-3xl font-bold text-white mb-1">Screen Recorder</h1>
+					<p class="text-zinc-400 text-sm">Capture and record your screen with ease</p>
+				</div>
 
-					<!-- Error Message -->
-					<div v-if="error" class="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-lg">
-						<p class="text-red-400 text-sm">{{ error }}</p>
-					</div>
+				<!-- Error Message -->
+				<div v-if="error" class="flex-shrink-0 mx-8 mt-4 p-4 bg-red-500/10 border border-red-500/50 rounded-lg">
+					<p class="text-red-400 text-sm">{{ error }}</p>
+				</div>
 
-					<!-- Main Content -->
-					<div class="grid lg:grid-cols-3 gap-6">
-						<!-- Video Preview -->
-						<div class="lg:col-span-2">
-							<div class="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 overflow-hidden">
-								<div class="aspect-video bg-slate-900/50 flex items-center justify-center relative">
-									<video ref="videoPreview" autoplay muted class="w-full h-full object-contain" :class="{ 'hidden': !hasStream }"></video>
+				<!-- Main Content Area -->
+				<div class="flex-1 flex flex-col overflow-hidden">
+					<div class="flex-1 flex overflow-hidden">
+						<!-- Video Preview Area -->
+						<div class="flex-1 flex items-center justify-center p-8 relative">
+							<!-- Updated video container with zinc borders and black background -->
+							<div class="w-full h-full bg-zinc-950 rounded-xl border border-zinc-800 overflow-hidden flex items-center justify-center">
+								<video ref="videoPreview" autoplay muted class="w-full h-full object-contain" :class="{ 'hidden': !hasStream }"></video>
 
-									<div v-if="!hasStream" class="text-center p-8">
-										<svg class="w-16 h-16 mx-auto mb-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-										</svg>
-										<p class="text-slate-400 text-lg mb-2">Start sharing your screen to see it here</p>
-										<p class="text-slate-500 text-sm">Click "Share screen" to begin</p>
-									</div>
-
-									<!-- Recording Indicator -->
-									<div v-if="isRecording" class="absolute top-4 left-4 flex items-center gap-2 bg-red-500/90 backdrop-blur-sm px-3 py-2 rounded-full recording-pulse">
-										<div class="w-3 h-3 bg-white rounded-full animate-pulse"></div>
-										<span class="text-white font-semibold text-sm">{{ formattedTime }}</span>
-									</div>
+								<div v-if="!hasStream" class="text-center p-8">
+									<!-- Updated icon and text colors to zinc palette -->
+									<svg class="w-20 h-20 mx-auto mb-4 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+									</svg>
+									<p class="text-zinc-300 text-xl mb-2">Start sharing your screen to see it here</p>
+									<p class="text-zinc-500">Click "Share screen" to begin</p>
 								</div>
 
-								<!-- Controls -->
-								<div class="p-6 space-y-4">
-									<!-- Recording Mode -->
-									<div v-if="!hasStream" class="flex gap-2 justify-center">
-										<button
-											@click="recordingMode = 'screen'"
-											:class="[
-                          'px-4 py-2 rounded-lg text-sm font-medium transition-all',
-                          recordingMode === 'screen'
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-slate-700/50 text-slate-300 hover:bg-slate-700'
-                        ]"
-										>
-											Screen only
-										</button>
-										<button
-											@click="recordingMode = 'screen-camera'"
-											:class="[
-                          'px-4 py-2 rounded-lg text-sm font-medium transition-all',
-                          recordingMode === 'screen-camera'
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-slate-700/50 text-slate-300 hover:bg-slate-700'
-                        ]"
-										>
-											Screen and camera
-										</button>
-									</div>
-
-									<!-- Action Buttons -->
-									<div class="flex items-center justify-center gap-4">
-										<button v-if="!hasStream" @click="startScreenShare" class="flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all transform hover:scale-105">
-											<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-											</svg>
-											Share screen
-										</button>
-
-										<template v-else>
-											<button
-												v-if="!isRecording"
-												@click="startRecording"
-												class="flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-all transform hover:scale-105"
-											>
-												<div class="w-4 h-4 bg-white rounded-full"></div>
-												Start Recording
-											</button>
-
-											<template v-else>
-												<button @click="togglePause" class="flex items-center gap-2 px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-medium transition-all">
-													<svg v-if="!isPaused" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-														<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-													</svg>
-													<svg v-else class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-														<path d="M8 5v14l11-7z" />
-													</svg>
-													{{ isPaused ? 'Resume' : 'Pause' }}
-												</button>
-
-												<button @click="stopRecording" class="flex items-center gap-2 px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-all">
-													<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-														<rect x="6" y="6" width="12" height="12" />
-													</svg>
-													Stop
-												</button>
-											</template>
-
-											<button @click="stopScreenShare" class="px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-all">End Share</button>
-										</template>
-									</div>
+								<!-- Recording Indicator -->
+								<div v-if="isRecording" class="absolute top-6 left-6 flex items-center gap-2 bg-red-500/90 backdrop-blur-sm px-4 py-2 rounded-full recording-pulse">
+									<div class="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+									<span class="text-white font-semibold">{{ formattedTime }}</span>
 								</div>
 							</div>
 						</div>
 
-						<!-- Recordings List -->
-						<div class="lg:col-span-1">
-							<div class="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-6">
+						<!-- Updated sidebar with zinc colors and borders -->
+						<div class="w-80 flex-shrink-0 bg-zinc-950 border-l border-zinc-800 overflow-y-auto">
+							<div class="p-6">
 								<h2 class="text-xl font-semibold text-white mb-4">Recordings</h2>
 
-								<div v-if="recordings.length === 0" class="text-center py-8">
-									<svg class="w-12 h-12 mx-auto mb-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<div v-if="recordings.length === 0" class="text-center py-12">
+									<svg class="w-16 h-16 mx-auto mb-3 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path
 											stroke-linecap="round"
 											stroke-linejoin="round"
 											stroke-width="2"
-											d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+											d="M15 10l4.553-2.276A2 2 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
 										/>
 									</svg>
-									<p class="text-slate-400 text-sm">No recordings yet</p>
+									<p class="text-zinc-400">No recordings yet</p>
 								</div>
 
 								<div v-else class="space-y-3">
-									<div v-for="recording in recordings" :key="recording.id" class="bg-slate-900/50 rounded-lg p-4 border border-slate-700/50">
+									<!-- Updated recording cards with zinc background and borders -->
+									<div v-for="recording in recordings" :key="recording.id" class="bg-zinc-900 rounded-lg p-4 border border-zinc-800 hover:border-zinc-700 transition-all">
 										<div class="flex items-start justify-between mb-2">
 											<div class="flex-1">
-												<p class="text-white font-medium text-sm mb-1">Recording</p>
-												<p class="text-slate-400 text-xs">{{ recording.timestamp }}</p>
+												<p class="text-white font-medium mb-1">Recording</p>
+												<p class="text-zinc-400 text-xs">{{ recording.timestamp }}</p>
 											</div>
 										</div>
 
 										<div class="flex gap-2 mt-3">
-											<button @click="downloadRecording(recording)" class="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs font-medium transition-all">
+											<!-- Updated button colors to white with black text for primary action -->
+											<button @click="downloadRecording(recording)" class="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-white hover:bg-zinc-200 text-black rounded text-sm font-medium transition-all">
 												<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
 												</svg>
 												Download
 											</button>
-											<button @click="deleteRecording(recording.id)" class="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded text-xs font-medium transition-all">
+											<button @click="deleteRecording(recording.id)" class="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded text-sm font-medium transition-all">
 												<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 													<path
 														stroke-linecap="round"
@@ -164,6 +96,92 @@
 											</button>
 										</div>
 									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Updated bottom controls with zinc borders and black background -->
+					<div class="flex-shrink-0 border-t border-zinc-800 bg-black">
+						<div class="flex items-center justify-between px-8 py-6">
+							<!-- Left - Share Screen Button -->
+							<div class="flex-1 flex justify-start">
+								<!-- Updated share button to white with black text -->
+								<button v-if="!hasStream" @click="startScreenShare" class="flex items-center gap-2 px-6 py-3 bg-white hover:bg-zinc-200 text-black rounded-lg font-medium transition-all transform hover:scale-105">
+									<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+									</svg>
+									Share screen
+								</button>
+
+								<button v-if="hasStream" @click="stopScreenShare" class="px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg font-medium transition-all">
+									<svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+									</svg>
+									Stop sharing
+								</button>
+							</div>
+
+							<!-- Center - Recording Controls -->
+							<div class="flex-1 flex justify-center">
+								<div class="flex items-center gap-3">
+									<button
+										v-if="hasStream && !isRecording"
+										@click="startRecording"
+										class="flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-all transform hover:scale-105"
+									>
+										<div class="w-4 h-4 bg-white rounded-full"></div>
+										Start
+									</button>
+
+									<template v-if="isRecording">
+										<!-- Updated pause button to white with black text -->
+										<button @click="togglePause" class="flex items-center gap-2 px-6 py-3 bg-white hover:bg-zinc-200 text-black rounded-lg font-medium transition-all">
+											<svg v-if="!isPaused" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+												<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+											</svg>
+											<svg v-else class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+												<path d="M8 5v14l11-7z" />
+											</svg>
+											{{ isPaused ? 'Resume' : 'Pause' }}
+										</button>
+
+										<button @click="stopRecording" class="flex items-center gap-2 px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg font-medium transition-all">
+											<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+												<rect x="6" y="6" width="12" height="12" />
+											</svg>
+											Stop
+										</button>
+									</template>
+								</div>
+							</div>
+
+							<!-- Right - Recording Mode Selection -->
+							<div class="flex-1 flex justify-end">
+								<div v-if="!hasStream" class="flex gap-2">
+									<!-- Updated mode buttons with white/zinc color scheme -->
+									<button
+										@click="recordingMode = 'screen'"
+										:class="[
+                    'px-5 py-3 rounded-lg font-medium transition-all',
+                    recordingMode === 'screen'
+                      ? 'bg-white text-black'
+                      : 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'
+                  ]"
+									>
+										Screen only
+									</button>
+									<button
+										@click="recordingMode = 'screen-camera'"
+										:class="[
+                    'px-5 py-3 rounded-lg font-medium transition-all',
+                    recordingMode === 'screen-camera'
+                      ? 'bg-white text-black'
+                      : 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'
+                  ]"
+									>
+										Screen and camera
+									</button>
 								</div>
 							</div>
 						</div>
