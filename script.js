@@ -52,6 +52,9 @@ createApp({
 					videoPreview.value.srcObject = mediaStream.value;
 				}
 
+				// Auto-record when screen sharing starts
+				startRecording();
+
 				mediaStream.value.getVideoTracks()[0].addEventListener("ended", () => {
 					stopScreenShare();
 				});
